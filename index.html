@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>side by side</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap" rel="stylesheet">
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.js"></script>
+<style>
+body { margin: 0; padding: 0; }
+#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
+</head>
+<body>
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
+<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css" type="text/css">
+<style>
+body { margin: 0; padding: 0; font-family: 'Roboto', sans-serif; font-size:14px;}
+#map1 { position: absolute; top: 0; bottom: 0; width: 50%;z-index:-1 }
+#map2 { position: absolute; top: 0; bottom: 0; width: 50%; left:50%; z-index:-1;}
+
+#menu1{z-index:1;position: absolute; top: 0; padding:10px;
+}
+#menu2{z-index:1;position: absolute; top: 0; right:0;padding:10px;
+	text-align:right;
+}
+#geocoder1{
+	position:fixed;
+	bottom:0px;
+	left:0px;
+	z-index:2;
+}
+/*#geocoder2{
+	position:fixed;
+	bottom:0px;
+	right:0px;
+	z-index:2;
+}*/
+#equal{
+	z-index:2;
+	font-size:40;
+	left:50%;
+	top:50%;
+	color:white;
+	background-color:rgba(0,0,0,.8);
+	width:30px;
+	height:20px;
+	position:absolute;
+	text-align:center;
+	margin:-15px;
+}
+.listNameSpan{
+	background-color:rgba(255,255,255,1);
+	padding:2px;
+}
+.listNameDiv{
+	margin:6px;
+}
+</style>
+</head>
+<body>
+
+<div id="map1"></div>
+<div id="map2"></div>
+<div id="equal">=</div>
+
+	
+<div id="menu1">
+	<div id="list1"></div>
+</div>
+<div id="menu2">
+	<div id="list2"></div>
+	<div id="geocoder2"></div>
+</div>
+	<div id="geocoder1"></div>
+
+
+<script>
+	var places = [
+		{name:"Central Park NYC", artist:"",zoom:14,coordinates:[40.780351186665015, -73.96781784718634]},
+		{name:"Great Pyramids of Giza",zoom:15,coordinates:[29.976314733533282, 31.13236137483321]},
+		// {name:"Home", artist:"",zoom:19,coordinates:[39.90773510128058, 116.39632768611757]},
+		// {name:"Sun Tunnels",zoom:20,coordinates:[41.303567663006575, -113.86381559285832]},
+		// {name:"Star Axis", artist:"",zoom:17,coordinates:[35.26425929008774, -105.08704614878297]},
+		{name:"Double Negative",zoom:16,coordinates:[36.61511641059329, -114.34444483773676]},
+		{name:"Spiral Jetty",zoom:17,coordinates:[41.43776410427027, -112.66886532805536]},
+		{name:"Micheal Heizer's City",zoom:15,coordinates:[38.03390940465886, -115.44311658840031]},
+		// {name:"Not a cornfield",zoom:20,coordinates:[34.071021529781156, -118.22690155105023]},
+		{name:"Rodin Crater",zoom:14,coordinates:[35.42622029889133, -111.25867552310058]},
+		// {name:"Little Sparta",zoom:20,coordinates:[55.72344742761352, -3.5091534377235387]},
+		{name:"Wavefieled",zoom:17,coordinates:[41.41620071238162, -74.06717585296465]},
+		{name:"The Palm Jumeirah",zoom:16,coordinates:[25.1227846337758, 55.13191637866695]}//,
+		// {name:"Desert Breath",zoom:17,coordinates:[27.380606594104133, 33.63258423742132]}
+	]
+	var place1 = places[0]
+	var place2 = places[1]
+
+	var zoom = null
+	
+	if(place1.zoom>place2.zoom){
+		zoom = place2.zoom
+	}else{
+		zoom = place1.zoom
+	}
+	
+	mapboxgl.accessToken = 'pk.eyJ1IjoiYzRzci1nc2FwcCIsImEiOiJja2J0ajRtNzMwOHBnMnNvNnM3Ymw5MnJzIn0.fsTNczOFZG8Ik3EtO9LdNQ';
+    const map1 = new mapboxgl.Map({
+        container: 'map1', // container ID
+        style: 'mapbox://styles/c4sr-gsapp/ckzfxlhor002814me3x6wnxeb', // custom style url from https://studio.mapbox.com/
+        center: [place1.coordinates[1],place1.coordinates[0]], // starting position
+        zoom: zoom// starting zoom
+    });
+	
+    const map2 = new mapboxgl.Map({
+        container: 'map2', // container ID
+        style: 'mapbox://styles/c4sr-gsapp/ckzfxlhor002814me3x6wnxeb', // custom style url from https://studio.mapbox.com/
+        center: [place2.coordinates[1],place2.coordinates[0]], // starting position
+        zoom: zoom // starting zoom
+    });
+	
+	makeMenu(places,"list1",map1)
+	makeMenu(places,"list2",map2)
+	
+	
+	map1.on("load",function(){
+		d3.selectAll(".mapboxgl-ctrl-attrib").remove()
+	
+		const geocoder1 = new MapboxGeocoder({accessToken: mapboxgl.accessToken,mapboxgl: mapboxgl});
+		document.getElementById('geocoder1').appendChild(geocoder1.onAdd(map1));
+	
+		const geocoder2 = new MapboxGeocoder({accessToken: mapboxgl.accessToken,mapboxgl: mapboxgl});
+		document.getElementById('geocoder2').appendChild(geocoder2.onAdd(map2));
+	})
+	
+	var map1Move = false
+	var map2Move = false
+	
+	map1.on("mousemove",function(){
+		map2Move =false
+		map1Move = true
+	})
+	map2.on("mousemove",function(){
+		map1Move =false
+		map2Move = true
+	})
+	
+	map1.on("move",function(){
+		if(map1Move == true){
+		
+			var map1Zoom = map1.getZoom()
+			map2.setZoom(map1Zoom)
+	}
+			})
+
+	map2.on("move",function(){
+		if(map2Move == true){
+			var map2Zoom = map2.getZoom()
+			map1.setZoom(map2Zoom)	
+	}		})
+
+	
+
+function makeMenu(list,divName,mapName){
+		for(var p in list){
+			d3.select("#"+divName).append("div").html("<span class=\"listNameSpan "+divName+"\" id=\"_"+p+divName+"Span\">"+list[p].name+"</span>")
+			.attr("class","listNameDiv")
+			.attr("index",p)
+			.attr("cursor","pointer")
+			.on("click",function(d){
+				//d3.selectAll(".listNameSpan").style("background-color","white")
+				d3.selectAll("."+divName).style("background-color","white")
+				var currentIndex = d3.select(this).attr("index")
+				d3.select("#_"+currentIndex+divName+"Span").style("background-color","yellow")
+				
+				var newPlace =list[currentIndex]
+				//console.log(newPlace)
+				mapName.setCenter([newPlace.coordinates[1],newPlace.coordinates[0]])
+				//if(newPlace.zoom<zoom){
+					map1.flyTo({zoom:newPlace.zoom})
+					map2.flyTo({zoom:newPlace.zoom})
+
+			})
+		}
+	}
+	
+	
+	
+	
+</script>
+
+</body>
+</html>
